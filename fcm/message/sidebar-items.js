@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["FcmError",""],["Priority",""]],"mod":[["response",""]],"struct":[["FcmResponse",""],["Message","Represents a FCM message. Construct the FCM message using various utility methods and finally send it. # Examples: ```rust use fcm::Message;"],["MessageResult",""]]});
