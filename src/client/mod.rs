@@ -10,18 +10,24 @@ use hyper::client::Client as HttpClient;
 use hyper::header::{Authorization, ContentType, Connection};
 use hyper::status::StatusCode;
 use rustc_serialize::json::{self, ToJson};
+use std::env;
 
-pub struct Client<'a> {
+pub struct Client {
     http_client: HttpClient,
-    fcm_uri: &'a str,
+    fcm_uri: String,
 }
 
-impl<'a> Client<'a> {
+impl Client {
     /// Get a new instance of Client.
-    pub fn new() -> Client<'a> {
+    pub fn new() -> Client {
+        let fcm_uri = match env::var("FCM_URI") {
+            Ok(val) => String::from(val),
+            Err(_) => String::from("https://fcm.googleapis.com/fcm/send")
+        };
+
         Client {
             http_client: HttpClient::new(),
-            fcm_uri: "https://fcm.googleapis.com/fcm/send",
+            fcm_uri: fcm_uri,
         }
     }
 
@@ -43,7 +49,7 @@ impl<'a> Client<'a> {
         let auth_header = format!("key={}", api_key);
 
         let response = self.http_client.
-            post(self.fcm_uri).
+            post(&self.fcm_uri).
             header(Connection::keep_alive()).
             header(ContentType::json()).
             body(&payload).
@@ -62,12 +68,6 @@ impl<'a> Client<'a> {
                 Client::parse_response(StatusCode::InternalServerError, "Server Error")
             }
         }
-    }
-
-    /// Set fcm uri if need to connect to other uri than default.
-    pub fn fcm_uri(&mut self, fcm_uri: &'a str) -> &mut Client<'a> {
-        self.fcm_uri = fcm_uri;
-        self
     }
 
     fn parse_response(status: StatusCode, body: &str) -> Result<response::FcmResponse, response::FcmError> {
