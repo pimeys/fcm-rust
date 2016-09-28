@@ -10,16 +10,24 @@ use hyper::client::Client as HttpClient;
 use hyper::header::{Authorization, ContentType, Connection};
 use hyper::status::StatusCode;
 use rustc_serialize::json::{self, ToJson};
+use std::env;
 
 pub struct Client {
     http_client: HttpClient,
+    fcm_uri: String,
 }
 
 impl Client {
     /// Get a new instance of Client.
     pub fn new() -> Client {
+        let fcm_uri = match env::var("FCM_URI") {
+            Ok(val) => String::from(val),
+            Err(_) => String::from("https://fcm.googleapis.com/fcm/send")
+        };
+
         Client {
             http_client: HttpClient::new(),
+            fcm_uri: fcm_uri,
         }
     }
 
@@ -41,7 +49,7 @@ impl Client {
         let auth_header = format!("key={}", api_key);
 
         let response = self.http_client.
-            post("https://fcm.googleapis.com/fcm/send").
+            post(&self.fcm_uri).
             header(Connection::keep_alive()).
             header(ContentType::json()).
             body(&payload).
