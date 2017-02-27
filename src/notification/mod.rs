@@ -8,22 +8,22 @@ use rustc_serialize::json::{ToJson, Json};
 /// corresponding `NotificationBuilder` to get an instance. You can then use 
 /// this notification instance when sending a FCM message.
 #[derive(Debug, PartialEq, Clone)]
-pub struct Notification<'a> {
-    title: Option<&'a str>,
-    body: Option<&'a str>,
-    icon: Option<&'a str>,
-    sound: Option<&'a str>,
-    badge: Option<&'a str>,
-    tag: Option<&'a str>,
-    color: Option<&'a str>,
-    click_action: Option<&'a str>,
-    body_loc_key: Option<&'a str>,
+pub struct Notification {
+    title: Option<String>,
+    body: Option<String>,
+    icon: Option<String>,
+    sound: Option<String>,
+    badge: Option<String>,
+    tag: Option<String>,
+    color: Option<String>,
+    click_action: Option<String>,
+    body_loc_key: Option<String>,
     body_loc_args: Option<Vec<String>>,
-    title_loc_key: Option<&'a str>,
+    title_loc_key: Option<String>,
     title_loc_args: Option<Vec<String>>,
 }
 
-impl <'a>ToJson for Notification<'a> {
+impl ToJson for Notification {
     fn to_json(&self) -> Json {
         let mut root = BTreeMap::new();
 
@@ -88,29 +88,29 @@ impl <'a>ToJson for Notification<'a> {
 /// ```rust
 /// use fcm::NotificationBuilder;
 ///
-/// let notification = NotificationBuilder::new()
-//      .title("Australia vs New Zealand")
-///     .body("3 runs to win in 1 ball")
-///     .finalize();
+/// let mut builder = NotificationBuilder::new();
+//  builder.title("Australia vs New Zealand");
+/// builder.body("3 runs to win in 1 ball");
+/// let notification = builder.finalize();
 /// ```
-pub struct NotificationBuilder<'a> {
-    title: Option<&'a str>,
-    body: Option<&'a str>,
-    icon: Option<&'a str>,
-    sound: Option<&'a str>,
-    badge: Option<&'a str>,
-    tag: Option<&'a str>,
-    color: Option<&'a str>,
-    click_action: Option<&'a str>,
-    body_loc_key: Option<&'a str>,
+pub struct NotificationBuilder {
+    title: Option<String>,
+    body: Option<String>,
+    icon: Option<String>,
+    sound: Option<String>,
+    badge: Option<String>,
+    tag: Option<String>,
+    color: Option<String>,
+    click_action: Option<String>,
+    body_loc_key: Option<String>,
     body_loc_args: Option<Vec<String>>,
-    title_loc_key: Option<&'a str>,
+    title_loc_key: Option<String>,
     title_loc_args: Option<Vec<String>>,
 }
 
-impl<'a> NotificationBuilder<'a> {
+impl NotificationBuilder {
     /// Get a new `NotificationBuilder` instance, with a title.
-    pub fn new() -> NotificationBuilder<'a> {
+    pub fn new() -> NotificationBuilder {
         NotificationBuilder {
             title: None,
             body: None,
@@ -128,82 +128,82 @@ impl<'a> NotificationBuilder<'a> {
     }
 
     // Set the title of the notification
-    pub fn title(&mut self, title: &'a str) -> &mut NotificationBuilder<'a> {
-        self.title = Some(title);
+    pub fn title<S: Into<String>>(&mut self, title: S) -> &mut NotificationBuilder {
+        self.title = Some(title.into());
         self
     }
 
     /// Set the body of the notification
-    pub fn body(&mut self, body: &'a str) -> &mut NotificationBuilder<'a> {
-        self.body = Some(body);
+    pub fn body<S: Into<String>>(&mut self, body: S) -> &mut NotificationBuilder {
+        self.body = Some(body.into());
         self
     }
 
     /// Set the notification icon.
-    pub fn icon(&mut self, icon: &'a str) -> &mut NotificationBuilder<'a> {
-        self.icon = Some(icon);
+    pub fn icon<S: Into<String>>(&mut self, icon: S) -> &mut NotificationBuilder {
+        self.icon = Some(icon.into());
         self
     }
 
     /// Set the sound to be played
-    pub fn sound(&mut self, sound: &'a str) -> &mut NotificationBuilder<'a> {
-        self.sound = Some(sound);
+    pub fn sound<S: Into<String>>(&mut self, sound: S) -> &mut NotificationBuilder {
+        self.sound = Some(sound.into());
         self
     }
 
     /// Set the badge for iOS notifications
-    pub fn badge(&mut self, badge: &'a str) -> &mut NotificationBuilder<'a> {
-        self.badge = Some(badge);
+    pub fn badge<S: Into<String>>(&mut self, badge: S) -> &mut NotificationBuilder {
+        self.badge = Some(badge.into());
         self
     }
 
     /// Tagging a notification allows you to replace existing notifications
     /// with the same tag with this new notification
-    pub fn tag(&mut self, tag: &'a str) -> &mut NotificationBuilder<'a> {
-        self.tag = Some(tag);
+    pub fn tag<S: Into<String>>(&mut self, tag: S) -> &mut NotificationBuilder {
+        self.tag = Some(tag.into());
         self
     }
 
     /// The color of the icon, in #rrggbb format
-    pub fn color(&mut self, color: &'a str) -> &mut NotificationBuilder<'a> {
-        self.color = Some(color);
+    pub fn color<S: Into<String>>(&mut self, color: S) -> &mut NotificationBuilder {
+        self.color = Some(color.into());
         self
     }
 
     /// What happens when the user clicks on the notification. Refer to 
     /// https://developers.google.com/cloud-messaging/http-server-ref#table2 for
     /// details.
-    pub fn click_action(&mut self, click_action: &'a str) -> &mut NotificationBuilder<'a> {
-        self.click_action = Some(click_action);
+    pub fn click_action<S: Into<String>>(&mut self, click_action: S) -> &mut NotificationBuilder {
+        self.click_action = Some(click_action.into());
         self
     }
 
     /// Set the body key string for localization
-    pub fn body_loc_key(&mut self, body_loc_key: &'a str) -> &mut NotificationBuilder<'a> {
-        self.body_loc_key = Some(body_loc_key);
+    pub fn body_loc_key<S: Into<String>>(&mut self, body_loc_key: S) -> &mut NotificationBuilder {
+        self.body_loc_key = Some(body_loc_key.into());
         self
     }
 
     /// String value to replace format specifiers in the body string.
-    pub fn body_loc_args<S: Into<String>>(&mut self, body_loc_args: Vec<S>) -> &mut NotificationBuilder<'a> {
+    pub fn body_loc_args<S: Into<String>>(&mut self, body_loc_args: Vec<S>) -> &mut NotificationBuilder {
         self.body_loc_args = Some(body_loc_args.into_iter().map(|s| s.into()).collect());
         self
     }
 
     /// Set the title key string for localization
-    pub fn title_loc_key(&mut self, title_loc_key: &'a str) -> &mut NotificationBuilder<'a> {
-        self.title_loc_key = Some(title_loc_key);
+    pub fn title_loc_key<S: Into<String>>(&mut self, title_loc_key: S) -> &mut NotificationBuilder {
+        self.title_loc_key = Some(title_loc_key.into());
         self
     }
 
     /// String value to replace format specifiers in the title string.
-    pub fn title_loc_args<S: Into<String>>(&mut self, title_loc_args: Vec<S>) -> &mut NotificationBuilder<'a> {
+    pub fn title_loc_args<S: Into<String>>(&mut self, title_loc_args: Vec<S>) -> &mut NotificationBuilder {
         self.title_loc_args = Some(title_loc_args.into_iter().map(|s| s.into()).collect());
         self
     }
 
     /// Complete the build and get a `Notification` instance
-    pub fn finalize(&mut self) -> Notification<'a> {
+    pub fn finalize(self) -> Notification {
         Notification {
             title: self.title,
             body: self.body,

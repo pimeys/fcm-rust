@@ -9,11 +9,11 @@ fn should_set_notification_title() {
 
     assert_eq!(nm.title, None);
 
-    let nm = NotificationBuilder::new()
-        .title("title")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.title("title");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.title, Some("title"));
+    assert_eq!(nm.title, Some("title".to_string()));
 }
 #[test]
 fn should_set_notification_body() {
@@ -21,20 +21,20 @@ fn should_set_notification_body() {
 
     assert_eq!(nm.body, None);
 
-    let nm = NotificationBuilder::new()
-        .body("body")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.body("body");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.body, Some("body"));
+    assert_eq!(nm.body, Some("body".to_string()));
 }
 
 #[test]
 fn should_set_notification_icon() {
-    let nm = NotificationBuilder::new()
-        .icon("newicon")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.icon("newicon");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.icon, Some("newicon"));
+    assert_eq!(nm.icon, Some("newicon".to_string()));
 }
 
 #[test]
@@ -43,11 +43,11 @@ fn should_set_notification_sound() {
 
     assert_eq!(nm.sound, None);
 
-    let nm = NotificationBuilder::new()
-        .sound("sound.wav")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.sound("sound.wav");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.sound, Some("sound.wav"));
+    assert_eq!(nm.sound, Some("sound.wav".to_string()));
 }
 
 #[test]
@@ -56,11 +56,11 @@ fn should_set_notification_badge() {
 
     assert_eq!(nm.badge, None);
 
-    let nm = NotificationBuilder::new()
-        .badge("1")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.badge("1");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.badge, Some("1"));
+    assert_eq!(nm.badge, Some("1".to_string()));
 }
 
 #[test]
@@ -69,11 +69,11 @@ fn should_set_notification_tag() {
 
     assert_eq!(nm.tag, None);
 
-    let nm = NotificationBuilder::new()
-        .tag("tag")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.tag("tag");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.tag, Some("tag"));
+    assert_eq!(nm.tag, Some("tag".to_string()));
 }
 
 #[test]
@@ -82,11 +82,11 @@ fn should_set_notification_color() {
 
     assert_eq!(nm.color, None);
 
-    let nm = NotificationBuilder::new()
-        .color("color")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.color("color");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.color, Some("color"));
+    assert_eq!(nm.color, Some("color".to_string()));
 }
 
 #[test]
@@ -95,11 +95,11 @@ fn should_set_notification_click_action() {
 
     assert_eq!(nm.click_action, None);
 
-    let nm = NotificationBuilder::new()
-        .click_action("action")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.click_action("action");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.click_action, Some("action"));
+    assert_eq!(nm.click_action, Some("action".to_string()));
 }
 
 #[test]
@@ -108,11 +108,11 @@ fn should_set_notification_body_loc_key() {
 
     assert_eq!(nm.body_loc_key, None);
 
-    let nm = NotificationBuilder::new()
-        .body_loc_key("key")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.body_loc_key("key");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.body_loc_key, Some("key"));
+    assert_eq!(nm.body_loc_key, Some("key".to_string()));
 }
 
 #[test]
@@ -121,9 +121,9 @@ fn should_set_notification_body_loc_args() {
 
     assert_eq!(nm.body_loc_args, None);
 
-    let nm = NotificationBuilder::new()
-        .body_loc_args(vec!["args"])
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.body_loc_args(vec!["args"]);
+    let nm = builder.finalize();
 
     assert_eq!(nm.body_loc_args, Some(vec!["args".to_string()]));
     assert_eq!(nm.to_json().search("body_loc_args").unwrap().as_string(), Some("[\"args\"]"));
@@ -135,11 +135,11 @@ fn should_set_notification_title_loc_key() {
 
     assert_eq!(nm.title_loc_key, None);
 
-    let nm = NotificationBuilder::new()
-        .title_loc_key("key")
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.title_loc_key("key");
+    let nm = builder.finalize();
 
-    assert_eq!(nm.title_loc_key, Some("key"));
+    assert_eq!(nm.title_loc_key, Some("key".to_string()));
 }
 
 #[test]
@@ -148,9 +148,9 @@ fn should_set_notification_title_loc_args() {
 
     assert_eq!(nm.title_loc_args, None);
 
-    let nm = NotificationBuilder::new()
-        .title_loc_args(vec!["args"])
-        .finalize();
+    let mut builder = NotificationBuilder::new();
+    builder.title_loc_args(vec!["args"]);
+    let nm = builder.finalize();
 
     assert_eq!(nm.title_loc_args, Some(vec!["args".to_string()]));
     assert_eq!(nm.to_json().search("title_loc_args").unwrap().as_string(), Some("[\"args\"]"));

@@ -17,12 +17,16 @@ Add this to `Cargo.toml`:
 ```rust
 [dependencies]
 fcm = "0.1.0"
+tokio-core = "0.1"
+futures = "0.1"
 ```
 
 then add this to your crate root:
 
 ```rust
 extern crate fcm;
+extern crate tokio;
+extern crate futures;
 ```
 
 ## Examples:
@@ -30,44 +34,50 @@ extern crate fcm;
 Here is an example to send out a FCM Message with some custom data:
 
 ```rust
-use fcm::{Message, Client};
 use std::collections::HashMap;
+use tokio_core::reactor::Core;
+use fcm::{Client, MessageBuilder};
 
-let client = Client::new();
+let mut core = Core::new().unwrap();
+let handle = core.handle();
+let client = fcm::Client::new(&handle);
 
 let mut map = HashMap::new();
 map.insert("message", "Howdy!");
 
-let message = Message::new("<registration id>").data(map);
-let result = client.send(message, "<FCM API Key>");
+let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+builder.data(map);
+
+let work = client.send(builder.finalize());
+
+match core.run(work) {
+    Ok(response) => println!("Sent: {:?}", response),
+    Err(error) => println!("Error: {:?}", error),
+};
 ```
 
 To send a message using FCM Notifications, we first build the notification:
 
 ```rust
-use fcm::{Message, NotificationBuilder, Client};
+use std::collections::HashMap;
+use tokio_core::reactor::Core;
+use fcm::{Client, NotificationBuilder};
 
-let client = Client::new();
+let mut core = Core::new().unwrap();
+let handle = core.handle();
+let client = Client::new(&handle);
 
-let notification = NotificationBuilder::new("Hey!")
-    .body("Do you want to catch up later?")
-    .finalize();
+let mut builder = NotificationBuilder::new("Hey!");
+builder.body("Do you want to catch up later?");
+let notification = builder.finalize();
 ```
 
 And then set it in the message, before sending it:
 
 ```rust
-let message = Message::new("<registration id>")
-    .notification(notification);
+let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+builder.notification(notification);
 
-let result = client.send(message, "<FCM API Key>");
-```
-
-You can now handle the result accordingly:
-
-```rust
-match result {
-  Ok(response) => println!("message_id: {:?}", response.message_id),
-  Err(error) => println!("Error: {:?}", error),
-}
+let work = client.send(builder.finalize());
+let result = core.run(work);
 ```

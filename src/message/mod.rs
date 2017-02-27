@@ -17,24 +17,27 @@ pub enum Priority {
 /// ```rust
 /// use fcm::MessageBuilder;
 ///
-/// let message = MessageBuilder::new("<registration id>").dry_run(true).finalize();
+/// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+/// builder.dry_run(true);
+/// let message = builder.finalize();
 /// ```
 #[derive(Debug)]
-pub struct Message<'a> {
-    to: &'a str,
+pub struct Message {
+    pub api_key: String,
+    to: String,
     registration_ids: Option<Vec<String>>,
-    collapse_key: Option<&'a str>,
+    collapse_key: Option<String>,
     priority: Option<Priority>,
     content_available: Option<bool>,
     delay_while_idle: Option<bool>,
     time_to_live: Option<i32>,
-    restricted_package_name: Option<&'a str>,
+    restricted_package_name: Option<String>,
     dry_run: Option<bool>,
     data: Option<HashMap<String, String>>,
-    notification: Option<Notification<'a>>,
+    notification: Option<Notification>,
 }
 
-impl <'a> ToJson for Message<'a> {
+impl ToJson for Message {
     fn to_json(&self) -> Json {
         let mut root = BTreeMap::new();
 
@@ -96,29 +99,33 @@ impl <'a> ToJson for Message<'a> {
 /// ```rust
 /// use fcm::MessageBuilder;
 ///
-/// let message = MessageBuilder::new("<registration id>").dry_run(true).finalize();
+/// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+/// builder.dry_run(true);
+/// let message = builder.finalize();
 /// ```
 #[derive(Debug)]
-pub struct MessageBuilder<'a> {
-    to: &'a str,
+pub struct MessageBuilder {
+    api_key: String,
+    to: String,
     registration_ids: Option<Vec<String>>,
-    collapse_key: Option<&'a str>,
+    collapse_key: Option<String>,
     priority: Option<Priority>,
     content_available: Option<bool>,
     delay_while_idle: Option<bool>,
     time_to_live: Option<i32>,
-    restricted_package_name: Option<&'a str>,
+    restricted_package_name: Option<String>,
     dry_run: Option<bool>,
     data: Option<HashMap<String, String>>,
-    notification: Option<Notification<'a>>,
+    notification: Option<Notification>,
 }
 
-impl<'a> MessageBuilder<'a> {
+impl MessageBuilder {
     /// Get a new instance of Message. You need to supply either
     /// a registration id, or a topic (/topic/...).
-    pub fn new(to: &'a str) -> MessageBuilder<'a> {
+    pub fn new<S: Into<String>>(api_key: S, to: S) -> MessageBuilder {
         MessageBuilder {
-            to: to,
+            api_key: api_key.into(),
+            to: to.into(),
             registration_ids: None,
             collapse_key: None,
             priority: None,
@@ -133,14 +140,14 @@ impl<'a> MessageBuilder<'a> {
     }
 
     /// Set various registration ids to which the message ought to be sent.
-    pub fn registration_ids<S: Into<String>>(&mut self, ids: Vec<S>) -> &mut MessageBuilder<'a> {
+    pub fn registration_ids<S: Into<String>>(&mut self, ids: Vec<S>) -> &mut MessageBuilder {
         self.registration_ids = Some(ids.into_iter().map(|s| s.into()).collect());
         self
     }
 
     /// Set this parameter to identify groups of messages that can be collapsed.
-    pub fn collapse_key(&mut self, collapse_key: &'a str) -> &mut MessageBuilder<'a> {
-        self.collapse_key = Some(collapse_key);
+    pub fn collapse_key<S: Into<String>>(&mut self, collapse_key: S) -> &mut MessageBuilder {
+        self.collapse_key = Some(collapse_key.into());
         self
     }
 
@@ -149,41 +156,42 @@ impl<'a> MessageBuilder<'a> {
     /// ```rust
     /// use fcm::{MessageBuilder, Priority};
     /// 
-    /// let message = MessageBuilder::new("<registration id>")
-    ///     .priority(Priority::High).finalize();
+    /// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+    /// builder.priority(Priority::High);
+    /// let message = builder.finalize();
     /// ```
-    pub fn priority(&mut self, priority: Priority) -> &mut MessageBuilder<'a> {
+    pub fn priority(&mut self, priority: Priority) -> &mut MessageBuilder {
         self.priority = Some(priority);
         self
     }
 
     /// To set the `content-available` field on iOS
-    pub fn content_available(&mut self, content_available: bool) -> &mut MessageBuilder<'a> {
+    pub fn content_available(&mut self, content_available: bool) -> &mut MessageBuilder {
         self.content_available = Some(content_available);
         self
     }
 
     /// When set to `true`, sends the message only when the device is active.
-    pub fn delay_while_idle(&mut self, delay_while_idle: bool) -> &mut MessageBuilder<'a> {
+    pub fn delay_while_idle(&mut self, delay_while_idle: bool) -> &mut MessageBuilder {
         self.delay_while_idle = Some(delay_while_idle);
         self
     }
 
     /// How long (in seconds) to keep the message on FCM servers in case the device 
     /// is offline. The maximum and default is 4 weeks.
-    pub fn time_to_live(&mut self, time_to_live: i32) -> &mut MessageBuilder<'a> {
+    pub fn time_to_live(&mut self, time_to_live: i32) -> &mut MessageBuilder {
         self.time_to_live = Some(time_to_live);
         self
     }
 
     /// Package name of the application where the registration tokens must match.
-    pub fn restricted_package_name(&mut self, restricted_package_name: &'a str) -> &mut MessageBuilder<'a> {
-        self.restricted_package_name = Some(restricted_package_name);
+    pub fn restricted_package_name<S: Into<String>>(&mut self, restricted_package_name: S) -> &mut MessageBuilder {
+        self.restricted_package_name = Some(restricted_package_name.into());
         self
     }
 
     /// When set to `true`, allows you to test FCM without actually sending the message.
-    pub fn dry_run(&mut self, dry_run: bool) -> &mut MessageBuilder<'a> {
+    pub fn dry_run(&mut self, dry_run: bool) -> &mut MessageBuilder {
         self.dry_run = Some(dry_run);
         self
     }
@@ -197,10 +205,12 @@ impl<'a> MessageBuilder<'a> {
     ///
     /// let mut map = HashMap::new();
     /// map.insert("message", "Howdy!");
-    /// 
-    /// let message = MessageBuilder::new("<registration id>").data(map).finalize();
+    ///
+    /// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+    /// builder.data(map);
+    /// let message = builder.finalize();
     /// ```
-    pub fn data(&mut self, data: HashMap<&'a str, &'a str>) -> &mut MessageBuilder<'a> {
+    pub fn data<'a>(&mut self, data: HashMap<&'a str, &'a str>) -> &mut MessageBuilder {
         let mut datamap: HashMap<String, String> = HashMap::new();
         for (key, val) in data.iter() {
             datamap.insert(key.to_string(), val.to_string());
@@ -215,21 +225,24 @@ impl<'a> MessageBuilder<'a> {
     /// ```rust
     /// use fcm::{MessageBuilder, NotificationBuilder};
     ///
-    /// let notification = NotificationBuilder::new("Hey!")
-    ///     .body("Do you want to catch up later?")
-    ///     .finalize();
+    /// let mut builder = NotificationBuilder::new();
+    /// builder.title("Hey!");
+    /// builder.body("Do you want to catch up later?");
+    /// let notification = builder.finalize();
     /// 
-    /// let message = MessageBuilder::new("<registration id>")
-    ///     .notification(notification).finalize();
+    /// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
+    /// builder.notification(notification);
+    /// let message = builder.finalize();
     /// ```
-    pub fn notification(&mut self, notification: Notification<'a>) -> &mut MessageBuilder<'a> {
+    pub fn notification(&mut self, notification: Notification) -> &mut MessageBuilder {
         self.notification = Some(notification);
         self
     }
 
     /// Complete the build and get a `Message` instance
-    pub fn finalize(&mut self) -> Message<'a> {
+    pub fn finalize(self) -> Message {
         Message {
+            api_key: self.api_key,
             to: self.to,
             registration_ids: self.registration_ids.clone(),
             collapse_key: self.collapse_key,

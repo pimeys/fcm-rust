@@ -1,4 +1,4 @@
-use retry_after::RetryAfter;
+use hyper::header::RetryAfter;
 
 #[derive(RustcDecodable, Debug)]
 pub struct FcmResponse {

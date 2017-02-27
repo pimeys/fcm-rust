@@ -1,15 +1,24 @@
 [package]
 name = "fcm"
 version = "0.1.1"
-authors = ["Suvish Varghese Thoovamalayil <vishy1618@gmail.com>", "panicbit <panicbit.dev@gmail.com>"]
+authors = [
+  "Suvish Varghese Thoovamalayil <vishy1618@gmail.com>",
+  "panicbit <panicbit.dev@gmail.com>",
+  "Julius de Bruijn <pimeys@gmail.com>"]
 description = "An API to talk to FCM (Firebase Cloud Messaging) in Rust"
 license = "MIT"
 homepage = "https://github.com/panicbit/fcm-rust"
 repository = "https://github.com/panicbit/fcm-rust"
 documentation = "https://panicbit.github.io/fcm-rust/fcm/"
-keywords = ["fcm", "firebase", "cloud", "messaging", "gcm"]
+keywords = ["fcm", "firebase", "cloud", "messaging", "gcm", "tokio"]
 
 [dependencies]
 rustc-serialize = "0.3.19"
-hyper = "0.9.10"
-retry-after = { git = "https://github.com/pimeys/retry-after" }
+futures = "0.1"
+tokio-core = "0.1"
+tokio-service = "0.1"
+hyper = { git = "https://github.com/hyperium/hyper"}
+hyper-tls = { git = "https://github.com/hyperium/hyper-tls" }
+
+[dev-dependencies]
+argparse = "*"
